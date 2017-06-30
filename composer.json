@@ -1,5 +1,5 @@
 {
-    "name": "rstoetter/cSQL",
+    "name": "rstoetter/csql-php",
     "description": "class to manage SQL statements ",
     "license": "MIT",
     "keywords": ["php", "sql","sql statement"],
@@ -17,7 +17,7 @@
     },
     "autoload": {
         "psr-4": {
-            "rstoetter\\libsqlphp\\": "src"
+            "rstoetter\\csql-php\\": "src"
         }
     }
 }
