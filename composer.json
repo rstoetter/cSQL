@@ -17,7 +17,7 @@
     },
     "autoload": {
         "psr-4": {
-            "rstoetter\\cSQL\\": "src"
+            "rstoetter\\cSQL\\": "src/"
         }
     }
 }
