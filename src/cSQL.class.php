@@ -1078,7 +1078,7 @@ class cSQL {
 	
 
 
-	    $real_name = $this->GetRealFieldname( $field_name );
+	    $real_name = self::GetRealFieldname( $field_name, $table_definition );
 	    $alias = self::GetAliasFromTablename( $field_name );
 
 	    if ( ( $alias !== $real_name ) && ( strlen( $alias ) ) ) {
