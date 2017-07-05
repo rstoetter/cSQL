@@ -700,7 +700,7 @@ class cSQL {
 	 */	
     
     
-      public function RemoveAll( $field_name_full ) {
+      static public function RemoveAll( $field_name_full ) {
 
         $field_name = self::RemoveAlias( $field_name_full );
         $field_name = self::RemoveFunctions( $field_name );
