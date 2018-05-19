@@ -52,14 +52,474 @@ class cSQL {
       */    	
 	
 	
-    static public function IsSubquerySQL( &$sql ) {
+    static public function IsSubquerySQL( string & $sql ) : bool {
 
 	// return ( substr( trim( $sql ), 0, 1 ) == '(' ) && ( substr( trim( $sql ), strlen( $sql ) - 1, 1  ) == ')' );
 	// TODO IsSubquerySQL( ) auf letzte Klammer prüfen und dabei eventuellen Alias berücksichtigen
+	
+        $ret = false;
 
-        return ( substr( trim( $sql ), 0, 1 ) == '(' );
+        if ( substr( trim( $sql ), 0, 1 ) == '(' ) {
+            if ( ( stripos( trim( substr( trim( $sql ), 1 ) ) , 'SELECT' ) ) === 0 ) {
+                $str = \rstoetter\cSQL\cSQL::RemoveAlias( $sql );
+                $ret = ( substr( $str, -1, 1 ) == ')' );
+            }
+        }
+        
+        return $ret;
 
     }	// function IsSubquerySQL( )
+    
+
+    
+    /**
+      *
+      * The method is_ctype_identifier( ) returns true, if $chr is a valid character for identifiers
+      * The method takes into consideration, too, whether $chr is an extra identifier
+      *
+      * Example:
+      *
+      * @param string $chr is the character to test
+      * @return bool true, if $chr is a valid character for identifiers
+      *
+      */     
+	
+
+	static private function is_ctype_identifier( string $chr ) : bool {
+	
+        if ( $chr == '' ) return false;
+
+	    return 
+                ( $chr == '_' ) || 
+                ( ctype_alnum( $chr ) || 
+                self::IsExtraIdentifier( $chr ) || 
+                self::is_ctype_sonderzeichen( $chr ) 
+        ) ;
+
+	}	// function is_ctype_identifier( )
+	
+    /**
+      *
+      * The method is_ctype_sonderzeichen( ) returns true, if $chr is a valid character for identifiers and a country-specific character
+      *
+      * Example:
+      *
+      * @param string $chr is the character to test
+      * @return bool true, if $chr is a valid character for identifiers
+      *
+      */    	
+	
+	static private function is_ctype_sonderzeichen( string $chr ) : bool {
+	
+            return ( strpos ( 'äöüßÄÖÜ', $chr ) !== false );	
+	
+	}
+	
+	
+    /**
+      *
+      * The method is_ctype_dbfield( ) returns true, if $chr is a valid character for database fields
+      *
+      * Example:
+      *
+      * @param string $chr is the character to test
+      * @return bool true, if $chr is a valid character for a database field
+      *
+      */     	
+
+	static private function is_ctype_dbfield( string $chr ) : bool {
+	    // mit dem Schema und oder Tabellennamen
+	    return 
+            ( $chr == '.' ) || 
+            ( $chr == '_' ) || 
+            ( 
+                ctype_alnum( $chr ) || 
+                self::is_ctype_sonderzeichen( $chr )  
+            ) ;
+
+	}	// function is_ctype_identifier( )
+	
+	static $m_id_extra = '';
+	static $m_id_start_extra = '';
+	
+    /**
+      *
+      * The method SetExtraStartIdentifier( ) sets the active start characters of identifiers
+      *
+      * Example:
+      *
+      * @param string $str the string with the extra start for identifiers
+      */   	    
+
+      
+    static public function SetExtraStartIdentifier( $str ) : string {
+    
+        $ret = self::$m_id_start_extra;
+
+        self::$m_id_start_extra = $str;
+        
+        return $ret;
+
+    }	// function SetExtraStartIdentifier( )	
+	
+    /**
+      *
+      * The method SetExtraIdentifier( ) sets the active characters of identifiers
+      *
+      * Example:
+      *
+      * @param string $str the string with the extra characters for identifiers
+      */   	    
+    
+
+    static public function SetExtraIdentifier( string $str ) : string {
+
+        $ret = self::$m_id_extra;
+    
+        self::$m_id_extra = $str;
+        
+        return $ret;
+
+    }	// function SetExtraIdentifier( )
+    
+    /**
+      *
+      * The method IsExtraIdentifier( ) returns true, if $chr is an extra character for identifiers
+      *
+      * Example:
+      *
+      * @param string $chr the charecter to test
+      *
+      * @return bool true, if $chr is part of the extra characters of identifiers
+      *
+      */   	    
+    
+
+
+    static protected function IsExtraIdentifier( $chr ) {
+
+        for ( $i = 0; $i < strlen( self::$m_id_extra ); $i++ ) {
+
+            if ( substr( self::$m_id_extra, $i , 1 ) == $chr ) {
+                return true;
+            }
+
+        }
+
+        return false;
+
+    }	// function IsExtraIdentifier( )    
+    
+    
+    /**
+      *
+      * The method IsExtraStartIdentifier( ) returns true, if $chr is an extra start identifier
+      *
+      * Example:
+      *
+      * @param string $chr the charecter to test
+      *
+      * @return bool true, if $chr is part of the extra start characters of identifiers
+      *
+      */   	    
+
+
+    static public function IsExtraStartIdentifier( string $chr ) : bool {
+
+        for ( $i = 0; $i < strlen( self::$m_id_start_extra ); $i++ ) {
+
+            if ( substr( self::$m_id_start_extra, $i , 1 ) == $chr ) return true;
+
+        }
+
+        return false;
+
+    }	// function IsExtraStartIdentifier( )	
+
+
+    /**
+      *
+      * The method is_ctype_identifier_start( ) returns true, if $chr is a valid starting character for identifiers
+      * The method takes into consideration, too, whether $chr is an extra start identifier
+      *
+      * Example:
+      *
+      * @param string $chr is the character to test
+      * @return bool true, if $chr is a valid starting character for identifiers
+      *
+      */     
+	
+	
+	static private function is_ctype_identifier_start( string $chr ) : bool {
+
+	    if ( $chr == '' ) return false;
+
+	    return 
+            ( $chr == '_' ) || 
+            ( ctype_alpha( $chr ) ) || 
+            self::IsExtraStartIdentifier( $chr ) || 
+            self::is_ctype_sonderzeichen( $chr ) 
+        ;
+
+	}	// function is_ctype_identifier_start( )    
+	
+	static private function PositionEndingBraceSQL( 
+        string & $str
+	) : int {
+	
+        $ret = -1;
+        $search1 = false;
+        $search2 = false;
+        $level = 0;
+        
+        // echo "\n PositionEndingBraceSQL( \"{$str}\" ) ";
+        
+        // skip spaces
+        
+        for ( $i = 0; $i < strlen( $str ); $i++ ) {
+            if ( ! ctype_space( substr( $str, $i, 1 ) ) ) {
+                break;
+            }
+        }
+        
+        if ( substr( $str, $i, 1 ) == '(' ) {     
+        
+            // echo "\n '(' detected";
+        
+            for ( $i = $i + 1 ; $i < strlen( $str ); $i++ ) {     // start with1 in order to skip first brace
+            
+                // echo "\n $i ->" . substr( $str, $i );
+                
+                if ( $search1 ) {
+                    if ( substr( $str, $i, 1 ) != '"' ) {
+                        continue;
+                    }
+                    $search1 = false;
+                    continue;
+                }
+                
+                if ( $search2 ) {
+                    if ( substr( $str, $i, 1 ) != "'" ) {
+                        continue;
+                    }
+                    $search2 = false;
+                    continue;
+                }
+                
+            
+                if ( substr( $str, $i, 1 ) == '"' ) {
+                    $search1 = true;                
+                    continue;
+                }
+                
+                if ( substr( $str, $i, 1 ) == "'" ) {
+                    $search2 = true;                
+                    continue;
+                }       
+                
+                if ( substr( $str, $i, 1 ) == "(" ) {
+                    // a new brace level was opened
+                    $level++;    
+                }             
+            
+                if ( substr( $str, $i, 1 ) == ')' ) {
+                    if ( ! $level ) {
+                        $ret = $i;
+                        break;
+                    } 
+                    
+                    $level --;
+                    
+                }
+                
+            }        
+        
+        }
+        
+        // echo "\n PositionEndingBraceSQL( ) returns $ret";
+        
+        return $ret;
+	
+	}  // function PositionEndingBraceSQL( )
+    
+    static public function PositionEndFunctionSQL( string & $sql ) : int {
+
+	// return ( substr( trim( $sql ), 0, 1 ) == '(' ) && ( substr( trim( $sql ), strlen( $sql ) - 1, 1  ) == ')' );
+	// TODO IsSubquerySQL( ) auf letzte Klammer prüfen und dabei eventuellen Alias berücksichtigen
+	
+        // echo "\n PositionEndFunctionSQL( \"{$sql}\" ) ";
+	
+        $ret = -1;
+        
+        $str = $sql;
+        
+        $i = 0;
+        
+        // skip spaces
+        for ( $i = 0; $i < strlen( $str ); $i++ ) {
+            if ( ! ctype_space( substr( $str, $i, 1 ) ) ) {
+                break;
+            }
+        }
+        
+        // skip function name
+        if ( self::is_ctype_identifier_start( substr( $str, $i, 1  ) ) ) {
+            for ( $i = $i; $i < strlen( $str ); $i++ ) {
+                if ( ! self::is_ctype_identifier( substr( $str, $i, 1 ) ) ) {
+                    break;
+                }
+            }
+        }
+        
+        $skipped_chars = $i;
+        
+        // echo "\n after function name with pos {$i} -> " . substr( $str, $i );
+        
+        if ( $i < strlen( $str ) ) {
+            
+            // skip '('
+            // $i++;            
+            
+            $str = substr( $str, $i );
+            
+            // echo "\n start with " . $str;
+        
+            // skip  spaces
+            for ( $i = 0; $i < strlen( $str ); $i++ ) {
+                if ( ! ctype_space( substr( $str, $i, 1 ) ) ) {
+                    break;
+                }
+            }
+            
+            // echo "\n without spaces ($i) : " . $str;
+            
+            if ( 
+                ( $i < strlen( $str ) ) &&
+                ( substr( $str, $i, 1  ) == '(' )
+            ) {
+                
+                $str = substr( $str, $i );
+                
+                // echo "\n before PositionEndingBraceSQL: ( $i ) " . $str;
+            
+                // search closing brace of the function 
+                if ( ( $pos = self::PositionEndingBraceSQL( $str ) ) != -1 ) {
+                    $ret = $pos + $skipped_chars;
+                }            
+            
+            }            
+            
+        }
+        
+        // echo "\n PositionEndFunctionSQL( ) returns {$ret}";
+        
+        return $ret;
+
+    }	// function PositionEndFunctionSQL( )
+    
+    static public function IsFunctionSQL( string & $sql ) : bool {
+    
+        $ret = false;
+        
+        // echo "\n IsFunctionSQL( {$sql} ) ";
+        
+        $str = \rstoetter\cSQL\cSQL::RemoveAlias( $sql );
+    
+        if ( ( $pos = self::PositionEndFunctionSQL( $str ) ) != -1 ) {
+        
+            // echo "\n pos ')' is " . $pos . '->\'' . substr( $str, $pos ) . '\'';
+        
+            
+            if ( $pos == strlen( $str ) -1 ) {
+                $ret = true;
+            } else {
+            
+            
+                $str = trim( substr( $sql, $pos + 1 ) );
+                if ( 
+                    ( $str == '' ) ||
+                    ( $str == ';' )
+                ) {
+                    $ret = true;
+                }
+            }
+        }
+        
+        
+        // echo "\n IsFunctionSQL( ) returns " . ( $ret ? 'true' : 'false' );
+        
+        return $ret;
+    
+    }   // function IsFunctionSQL( )
+    
+    static private function ContainsSpace( 
+                            string $str
+    ) : bool {		
+    
+        $ret = false;
+    
+        for ( $i = 0; $i < strlen( $str ); $i++ ) {
+            if ( ctype_space( substr( $str, $i, 1 ) ) ) {
+                $ret = true;
+                break;
+            }
+        }
+        
+        return $ret;
+    
+    }   // function ContainsSpace( )    
+    
+	static public function CheckedFieldName( 
+                            string $field_name,
+                            bool $allow_subquery = true,
+                            bool $allow_function = true
+    ) : bool {	
+	
+        $ret = true;
+        
+        if ( ! strlen( trim( $field_name ) ) ) {
+            return false;
+        }
+    
+        /*
+        echo 
+            "\n CheckedFieldName( {$field_name} ," .
+            ' allow_subquery = ' . ( $allow_subquery ? 'true' : 'false' ) . ',' .
+            ' allow_function = ' . ( $allow_function ? 'true' : 'false' ) .
+            "' ) "
+        ;
+        */
+        
+        if ( self::IsSubquerySQL( $field_name ) )  {
+            $ret = $allow_subquery;
+        } elseif ( self::IsFunctionSQL( $field_name ) )  {
+            $ret = $allow_function;
+        } else {
+        
+            $ret = ( self::ContainsSpace( $field_name ) == false );
+            if ( ! $ret ) {
+                // maybe an alias ?
+                $field_name_pure = \rstoetter\cSQL\cSQL::RemoveAlias( $field_name );
+                $ret = ( self::ContainsSpace( $field_name_pure ) == false );
+            }
+            
+            if ( $ret ) {
+                $ret = ( substr( $field_name, 0, 1 ) != '.' );
+            }
+            
+            if ( $ret ) {
+                $ret = ( substr( $field_name, -1, 1 ) != '.' );
+            }            
+        
+        }
+        
+        // echo "\n CheckedFieldName( ) returns " . ( $ret ? 'true' : 'false' );
+        
+        return $ret;
+	
+	}  // function CheckedFieldName( )
+    
+    
 
     
     /**
@@ -77,80 +537,85 @@ class cSQL {
 
     static public function RemoveFunctions( $expression ) {	// TODO verschluckt optionalen ALIAS!
 
-	// strip any functions surrounding a column name and save the alias, if any
+        // strip any functions surrounding a column name and save the alias, if any
 
-	$expression = trim( $expression );
-	$alias = '';
+        $expression = trim( $expression );
+        $alias = '';
 
-	$changed = false;
-	if ( ( substr( $expression, 0, 1 ) != '(' ) && ( ( $pos1 = ( strpos( $expression, '(' ) ) ) !== false ) ) {
+        $changed = false;
+        if ( 
+            ( substr( $expression, 0, 1 ) != '(' ) && 
+            ( ( $pos1 = ( strpos( $expression, '(' ) ) ) !== false ) 
+        ) {
 
-	    $alias = '';
-	    $start = -1;
-	    while ( ctype_alnum( $chr = substr( $expression, $start, 1 ) ) ) {
+            $alias = '';
+            $start = -1;
+            while ( ctype_alnum( $chr = substr( $expression, $start, 1 ) ) ) {
 
-		$alias = $chr . $alias;
-		$start--;
+                $alias = $chr . $alias;
+                $start--;
 
-	    }
+            }
 
-	    $pos2 = strrpos( $expression, ')' );
+            $pos2 = strrpos( $expression, ')' );
 
-	    assert( $pos2 !== false );
+            assert( $pos2 !== false );
 
-	    if ( $pos2 !== false ) {
-
-
-		$expression = trim( substr( $expression, $pos1 + 1, $pos2 -1 - ( $pos1 + 1 ) ) );
-
-		$fertig = false;
-		while ( !$fertig ) {
-
-		    $pos1 = strrpos( $expression, ','  );
-		    $pos2 = strrpos( $expression, ')'  );
-
-		    if ( ( $pos1 !== false  ) && ( $pos2 !== false ) ) {
-
-			if ( $pos1 > $pos2 ) {
-
-			    $expression = trim( substr( $expression, 0, $pos1 - 1 ) );
-
-			} else {
-
-			    $fertig = true;
-
-			}
-
-		    } elseif ( $pos1 !== false ) {
-
-			$expression = trim( substr( $expression, 0, $pos1 - 1 ) );
-			$fertig = true;
+            if ( $pos2 !== false ) {
 
 
-		    } else {
+            $expression = trim( substr( $expression, $pos1 + 1, $pos2 -1 - ( $pos1 + 1 ) ) );
 
-			$fertig = true;
+            $fertig = false;
+            while ( !$fertig ) {
 
-		    }
+                $pos1 = strrpos( $expression, ','  );
+                $pos2 = strrpos( $expression, ')'  );
 
-		}
+                if ( ( $pos1 !== false  ) && ( $pos2 !== false ) ) {
 
-	    } else {
-		assert( false == true );
-	    }
+                    if ( $pos1 > $pos2 ) {
 
-	    $changed = true;
+                        $expression = trim( substr( $expression, 0, $pos1 - 1 ) );
 
-	}
+                    } else {
 
-	if ( $changed ) $expression = self::RemoveFunctions( $expression ) ;
+                        $fertig = true;
 
-	$alias = trim( $alias );
-	if ( strlen( $alias ) ) {
-	    $alias = ' ' . $alias;
-	}
+                    }
 
-	return $expression . $alias;
+                } elseif ( $pos1 !== false ) {
+
+                    $expression = trim( substr( $expression, 0, $pos1 - 1 ) );
+                    $fertig = true;
+
+
+                } else {
+
+                    $fertig = true;
+
+                }
+
+            }
+
+            } else {
+                assert( false == true );
+            }
+
+            $changed = true;
+
+        }
+
+        if ( $changed ) {
+            $expression = self::RemoveFunctions( $expression ) ;
+        }
+
+        $alias = trim( $alias );
+        if ( strlen( $alias ) ) {
+            $alias = ' ' . $alias;
+        }
+
+        return $expression . $alias;
 
 
     }	// function RemoveFunctions( )
@@ -451,36 +916,6 @@ class cSQL {
 
 	}	// function SchemaNameIn( )
 	
-	/**
-	 * The method Dump( ) dumps the contents of the instance
-	 *
-	 * Example:
-	 *
-	 *
-	 */
-	
-
-	public function Dump( ) {
-
-	    echo "\n Element of class cSQL: ";
-
-	    echo '<br><h3>Tabellennamen:</h3>';
-
-
-	    echo '<br>' . $this->GetTable( );
-
-	    echo '<br><h3>Spaltennamen:</h3>';
-
-	    for ( $i = 0; $i < $this->GetFieldCount( ); $i++ ) {
-
-		echo '<br>' . $this->GetField( $i );
-
-	    }
-
-	}	// function Dump( );
-	
-	
-
 
 	// TODO alles auch auf JOINS prüfen
 
@@ -611,7 +1046,9 @@ class cSQL {
 	static public function IsSubqueryStatement( $statement ) {
 
 	    // handelt es sich beim Statement um eine INLINE-Abfrage
-
+	    
+	    return self::IsSubquerySQL( $statement );
+/*
 	    $statement = trim( $statement );
 
 	    if ( substr( $statement, 0, 1 ) == '(' ) {
@@ -619,10 +1056,13 @@ class cSQL {
 		$statement = trim( substr( $statement, 1 ) );
 
 		return ( stripos( $statement, 'SELECT' ) === 0 );
+		
 
 	    }
+	    
 
 	    return false;
+*/	    
 
 	}	// function IsSubqueryStatement( )
 	
