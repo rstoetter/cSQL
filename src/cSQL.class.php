@@ -1656,7 +1656,7 @@ class cSQL {
       *
       * @param string|null $sql_date is the value to test
       * @throws Exception if $sql_date has no valid type
-      * @return DateTime|null a DateTime object according to the settings in $sql_date or null, if $sql_date is a zero SQL date
+      * @return \DateTime|null a DateTime object according to the settings in $sql_date or null, if $sql_date is a zero SQL date
       *
       */    
     
@@ -1700,7 +1700,7 @@ class cSQL {
       *
       * @param string|null $sql_time is the value to test
       * @throws Exception if $sql_time has no valid type
-      * @return DateTime|null a DateTime object according to the settings in $sql_time or null, if $sql_time is a zero SQL time
+      * @return \DateTime|null a DateTime object according to the settings in $sql_time or null, if $sql_time is a zero SQL time
       *
       */    
     
@@ -1743,7 +1743,7 @@ class cSQL {
       *
       * @param string|null $sql_datetime is the value to test
       * @throws Exception if $sql_datetime has no valid type
-      * @return DateTime|null a DateTime object according to the settings in $sql_datetime or null, if $sql_datetime is a zero SQL datetime
+      * @return \DateTime|null a DateTime object according to the settings in $sql_datetime or null, if $sql_datetime is a zero SQL datetime
       *
       */    
     
