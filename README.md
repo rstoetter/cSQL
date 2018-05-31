@@ -1,10 +1,10 @@
 # csql-php
 
-The class cSql is written in PHP and helps to manage SQL statements. 
+The class cSQL is written in PHP and helps to manage SQL statement components. 
 
 The namespace is rstoetter\\cSql
 
-## methods provided
+## static methods provided by the class cSQL
 
     cSQL::AddFunction()
     cSQL::CheckedFieldName()
@@ -54,7 +54,7 @@ This project assumes you have composer installed. Simply add:
 
 to your composer.json, and then you can simply install with:
 
-composer install
+    composer install
 
 ## more information
 
