@@ -1530,6 +1530,255 @@ class cSQL {
 
 
 	}	// function GetAliasOrRealFieldname( )
+	
 
+	
+
+    /**
+      *
+      * The method IsSqlZeroDate( ) returns true, if $sql_date is a zero SQL date string ('0000-00-00') or an empty string or is null
+      *
+      * Example:
+      *
+      * @param string|null $sql_date is the value to test
+      * @throws Exception if $sql_date has no valid type
+      * @return bool true, if $sql_date is a zero SQL date
+      *
+      */ 	
+	
+    static public function IsSqlZeroDate( $sql_date ) : bool {
+    
+        if ( is_null( $sql_date ) ) {
+            return true;
+        }
+        
+        if ( is_string( $sql_date ) ) {
+    
+            $sql_date = trim( $sql_date );
+        
+            return ( $sql_date === '0000-00-00' ) || ( ! strlen( $sql_date ) );
+        
+        }
+        
+        debug_print_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS );
+        
+        throw new Exception( 
+            'unsupported type \'' .
+            gettype( $sql_date ) .
+            '\' for IsSqlZeroDate( \'' . 
+            $sql_date . 
+            '\' ) ' 
+        );
+    
+    }   // function IsSqlZeroDate( )
+    
+    /**
+      *
+      * The method IsSqlZeroTime( ) returns true, if $sql_time is a zero SQL time string ('00:00:00') or an empty string or is null
+      *
+      * Example:
+      *
+      * @param string|null $sql_time is the value to test
+      * @throws Exception if $sql_time has no valid type
+      * @return bool true, if $sql_time is a zero SQL time
+      *
+      */ 	    
+    
+    static public function IsSqlZeroTime( $sql_time ) : bool {
+    
+        if ( is_null( $sql_time ) ) {
+            return true;
+        }
+        
+        if ( is_string( $sql_time ) ) {
+    
+            $sql_time = trim( $sql_time );
+        
+            return ( $sql_time === '00:00:00' ) || ( ! strlen( $sql_time ) );
+        
+        }
+        
+        debug_print_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS );
+        
+        throw new Exception( 
+            'unsupported type \'' .
+            gettype( $sql_time ) .
+            '\' for IsSqlZeroTime( \'' . 
+            $sql_time . 
+            '\' ) ' 
+        );
+    
+    }   // function IsSqlZeroTime( )
+    
+    /**
+      *
+      * The method IsSqlZeroDateTime( ) returns true, if $sql_datetime is a zero SQL datetime string ('0000-00-00 00:00:00') or an empty string or is null
+      *
+      * Example:
+      *
+      * @param string|null $sql_datetime is the value to test
+      * @throws Exception if $sql_datetime has no valid type
+      * @return bool true, if $sql_datetime is a zero SQL datetime
+      *
+      */     
+    
+    static public function IsSqlZeroDateTime( $sql_datetime ) : bool {
+    
+        if ( is_null( $sql_datetime ) ) {
+            return true;
+        }
+        
+        if ( is_string( $sql_datetime ) ) {
+    
+            $sql_datetime = trim( $sql_datetime );
+        
+            return ( $sql_datetime === '0000-00-00 00:00:00' ) || ( ! strlen( $sql_datetime ) );
+        
+        }
+        
+        debug_print_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS );
+        
+        throw new Exception( 
+            'unsupported type \'' .
+            gettype( $sql_datetime ) .
+            '\' for IsSqlZeroDateTime( \'' . 
+            $sql_datetime . 
+            '\' ) ' 
+        );
+    
+    }   // function IsSqlZeroDateTime( )    
+    
+    /**
+      *
+      * The method SqlDate2DateTime( ) returns a DateTime object, if $sql_date is a valid SQL date string or NULL, if $sql_date is a zero SQL date string ('0000-00-00') or an empty string or is null
+      *
+      * Example:
+      *
+      * @param string|null $sql_date is the value to test
+      * @throws Exception if $sql_date has no valid type
+      * @return DateTime|null a DateTime object according to the settings in $sql_date or null, if $sql_date is a zero SQL date
+      *
+      */    
+    
+
+    static public function SqlDate2DateTime( $sql_date ) {
+    
+        // returns null or a valid DateTime-object
+        
+        $sql_date = trim( $sql_date );
+        
+        if ( self::IsSqlZeroDate( $sql_date ) ) {
+            return null;
+        } 
+        
+        if ( is_string( $sql_date ) ) {
+        
+            // DateTime::createFromFormat( ) will throw an error if there were errors
+        
+            return DateTime::createFromFormat( 'Y-m-d', $sql_date );                        
+            
+        }
+        
+        debug_print_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS );
+        
+        throw new Exception( 
+            'unsupported type \'' .
+            gettype( $sql_datetime ) .
+            '\' for SqlDate2DateTime( \'' . 
+            $sql_date . 
+            '\' ) ' 
+        );        
+        
+        
+    }   // function SqlDate2DateTime( )
+    
+    /**
+      *
+      * The method SqlDate2DateTime( ) returns a DateTime object, if $sql_time is a valid SQL time string or NULL, if $sql_time is a zero SQL time string ('00:00:00') or an empty string or is null
+      *
+      * Example:
+      *
+      * @param string|null $sql_time is the value to test
+      * @throws Exception if $sql_time has no valid type
+      * @return DateTime|null a DateTime object according to the settings in $sql_time or null, if $sql_time is a zero SQL time
+      *
+      */    
+    
+    
+    static public function SqlTime2DateTime( string $sql_time ) {
+    
+        // returns null or a valid DateTime-object
+        
+        $sql_time = trim( $sql_time );
+        
+        if ( self::IsSqlZeroTime( $sql_time ) ) {
+            return null;
+        } 
+        
+        if ( is_string( $sql_time ) ) {
+        
+            // DateTime::createFromFormat( ) will throw an error if there were errors
+        
+            return DateTime::createFromFormat( 'H-i-s', $sql_time );                        
+            
+        }
+        
+        debug_print_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS );
+        
+        throw new Exception( 
+            'unsupported type \'' .
+            gettype( $sql_timetime ) .
+            '\' for SqlTime2DateTime( \'' . 
+            $sql_time . 
+            '\' ) ' 
+        );        
+    
+    }   // function SqlTime2DateTime( )    
+    
+    /**
+      *
+      * The method SqlDateTime2DateTime( ) returns a DateTime object, if $sql_datetime is a valid SQL datetime string or NULL, if $sql_datetime is a zero SQL datetimetime string ('0000-00-00 00:00:00') or an empty string or is null
+      *
+      * Example:
+      *
+      * @param string|null $sql_datetime is the value to test
+      * @throws Exception if $sql_datetime has no valid type
+      * @return DateTime|null a DateTime object according to the settings in $sql_datetime or null, if $sql_datetime is a zero SQL datetime
+      *
+      */    
+    
+    
+    static public function SqlDateTime2DateTime( string $sql_datetime ) {
+    
+        // returns null or a valid DateTime-object
+        
+        $sql_datetime = trim( $sql_datetime );
+        
+        if ( self::IsSqlZeroDateTime( $sql_datetime ) ) {
+            return null;
+        } 
+        
+        if ( is_string( $sql_datetime ) ) {
+        
+            // DateTime::createFromFormat( ) will throw an error if there were errors
+        
+            return DateTime::createFromFormat( 'Y-m-d H-i-s', $sql_datetime );                        
+            
+        }
+        
+        debug_print_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS );
+        
+        throw new Exception( 
+            'unsupported type \'' .
+            gettype( $sql_datetimetime ) .
+            '\' for SqlDateTime2DateTime( \'' . 
+            $sql_datetime . 
+            '\' ) ' 
+        );        
+    
+    }   // function SqlDateTime2DateTime( )     
+	
+	
+	
 }		// class  cSQL
 ?>
